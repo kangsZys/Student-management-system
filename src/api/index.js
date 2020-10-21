@@ -1,5 +1,5 @@
 import axios from './config'
-
+// 登录
 export const login = (username, password) => axios({
     url: '/users/login',
     method: 'post',
@@ -8,7 +8,7 @@ export const login = (username, password) => axios({
         password
     }
 })
-
+// 获取登录日志
 export const getLoginLog = () => axios({
     url: '/getloginlog',
     method: 'get'

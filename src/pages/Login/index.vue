@@ -97,7 +97,7 @@ export default {
                 localStorage.setItem("token", res.data.token);
                 localStorage.setItem("userInfo", JSON.stringify(res.data.userInfo));
                 this.SET_USERINFO(res.data.userInfo)
-                this.$router.push("/");
+                this.$router.push("/Welcome");
               } else {
                 this.$message.error("用户名或密码错误");
               }
