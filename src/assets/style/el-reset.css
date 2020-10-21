@@ -1,0 +1,17 @@
+.login .el-form-item__label{
+    color: #fff;
+}
+.login .el-input{
+    width: 80%;
+}
+.login .el-input__inner{
+    background: transparent;
+    color: #fff;
+}
+
+.home .el-radio-group{
+
+}
+.home .el-aside{
+    width: auto !important;
+}
