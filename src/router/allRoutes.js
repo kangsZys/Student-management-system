@@ -20,7 +20,7 @@ const allRoutes = [
   {
     path: 'StudentManager',
     name: 'StudentManager',
-    // redirect:"/StudentManager/studentProduct",
+    redirect:"/StudentManager/studentProduct",
     component: StudentManager,
     meta: {
       name: '学员管理',
@@ -28,7 +28,7 @@ const allRoutes = [
     },
     children: [
       {
-        path: '/studentProduct',
+        path: 'studentProduct',
         name: 'studentProduct',
         component: studentProduct,
         meta: {
@@ -37,7 +37,7 @@ const allRoutes = [
         },
       },
       {
-        path: '/studentProfile',
+        path: 'studentProfile',
         name: 'studentProfile',
         component: studentProfile,
         meta: {
@@ -46,7 +46,7 @@ const allRoutes = [
         }
       },
       {
-        path: '/studentDormitory',
+        path: 'studentDormitory',
         name: 'studentDormitory',
         component: studentDormitory,
         meta: {

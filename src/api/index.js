@@ -13,3 +13,9 @@ export const getLoginLog = () => axios({
     url: '/getloginlog',
     method: 'get'
 })
+
+// 获取权限菜单
+export const getMenuList = () => axios({
+    url: '/permission/getMenuList',
+    method: 'get'
+})

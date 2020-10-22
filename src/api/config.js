@@ -6,8 +6,12 @@ axios.defaults.baseURL = process.env.NODE_ENV === 'development' ? '/api' : 'http
 
 axios.defaults.withCredentials = true
 
+import NProgress from 'nprogress' 
+import 'nprogress/nprogress.css'
+NProgress.configure({showSpinner: true});
 axios.interceptors.request.use(config => {
-    console.log(config)
+    NProgress.done()
+    // console.log(config)
     if(config.url === '/users/login'){
         return config
     }else{
@@ -18,11 +22,15 @@ axios.interceptors.request.use(config => {
 })
 
 axios.interceptors.response.use(config => {
-    console.log(config)
+    NProgress.done()
+    // console.log(config)
     let {data} = config
     if(data.code === '10022' || data.code === '1004'){
         ElementUl.Message.error('用户信息失效')
-        // router.push('/login')
+        localStorage.removeItem("token");
+        localStorage.removeItem("userInfo");
+        router.push('/login')
+        window.location.reload()
     }
     return config
 })

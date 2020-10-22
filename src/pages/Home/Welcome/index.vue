@@ -51,11 +51,11 @@ export default {
   },
   mounted() {
     getLoginLog().then(res => {
-      console.log(res.data.data);
-        this.tableData = res.data.data;
+      // console.log(res.data.data);
+      this.tableData = res.data.data;
       this.loading = false;
     });
-  },
+  }
 };
 </script>
 <style>

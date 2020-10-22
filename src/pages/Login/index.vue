@@ -24,7 +24,7 @@
               type="password"
               v-model="loginForm.password"
               autocomplete="off"
-             @change="submitForm('loginForm')"
+             @keyup.enter.native="submitForm('loginForm')"
             ></el-input>
           </el-form-item>
           <el-form-item>
@@ -91,15 +91,16 @@ export default {
           login(username, password)
             .then(res => {
               loading.close();
-              console.log(res);
+              // console.log(res);
               if (res.data.state) {
-                this.$message.success("登陆成功");
+                this.$message.success("登陆成功,跳转中......");
                 localStorage.setItem("token", res.data.token);
                 localStorage.setItem("userInfo", JSON.stringify(res.data.userInfo));
                 this.SET_USERINFO(res.data.userInfo)
                 this.$router.push("/Welcome");
               } else {
                 this.$message.error("用户名或密码错误");
+                this.loginForm.password = ''
               }
             })
             .catch(err => {

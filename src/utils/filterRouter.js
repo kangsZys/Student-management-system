@@ -17,17 +17,5 @@ function filterRouter(memuList, allRouter) {
     })
     return routerList
 }
-let memuList = [
-    {
-        "name": "管理首页"
-    },
-    {
-        "name": "学员管理",
-        "children": [
-            {
-                "name": "学员项目管理"
-            }
-        ]
-    }
-]
-console.log(filterRouter(memuList, allRouter))
+
+export default filterRouter
