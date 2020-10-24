@@ -2,6 +2,10 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
+
+// 引入eventBus
+import bus from "@/utils/bus.js"
+Vue.prototype.$bus = bus
 // 全局引用
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
@@ -46,9 +50,9 @@ router.beforeEach((to, from, next) => {
 // 使用后置路由钩子处理面包屑
 router.afterEach((to, from) => {
   NProgress.done()
-  console.log(to);
+  // console.log(to);
   let crumbList = to.matched.slice(1)
-  console.log(crumbList);
+  // console.log(crumbList);
   store.commit('SET_CRUMBS', crumbList)
 })
 

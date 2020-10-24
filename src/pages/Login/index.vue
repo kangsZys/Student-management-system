@@ -24,9 +24,25 @@
               type="password"
               v-model="loginForm.password"
               autocomplete="off"
-             @keyup.enter.native="submitForm('loginForm')"
+              @keyup.enter.native="submitForm('loginForm')"
             ></el-input>
           </el-form-item>
+          <!-- 验证码 -->
+          <el-form-item label="验证码" prop="captcha">
+            <el-input
+              type="text"
+              v-model="loginForm.captcha"
+              autocomplete="off"
+              @keyup.enter.native="submitForm('loginForm')"
+              class="captchaInput"
+            ></el-input>
+            <span
+              class="captcha"
+              v-html="loginForm.captchaImg"
+              @click="updateCaptcha"
+            ></span>
+          </el-form-item>
+
           <el-form-item>
             <el-button type="primary" @click="submitForm('loginForm')"
               >提交</el-button
@@ -46,8 +62,8 @@
   </div>
 </template>
 <script>
-import { login } from "@/api/index.js";
-import {mapMutations} from "vuex"
+import { login, getCaptcha, verifyCaptcha } from "@/api/index.js";
+import { mapMutations } from "vuex";
 export default {
   data() {
     var validateUsername = (rule, value, callback) => {
@@ -64,48 +80,81 @@ export default {
         callback();
       }
     };
+    var validateCaptcha = (rule, value, callback) => {
+      if (value.length !== 5) {
+        callback(new Error("请输入正确格式的验证码"));
+      } else {
+        callback();
+      }
+    };
     return {
+      timer: "",
       loginForm: {
-        username: "",
-        password: ""
+        username: "admin",
+        password: "admin",
+        captcha: "12345",
+        captchaImg: ""
       },
       rules: {
         username: [{ validator: validateUsername, trigger: "blur" }],
-        password: [{ validator: validatePass, trigger: "blur" }]
+        password: [{ validator: validatePass, trigger: "blur" }],
+        captcha: [{ validator: validateCaptcha, trigger: "blur" }]
       }
     };
   },
+  mounted() {
+    getCaptcha().then(res => {
+      this.loginForm.captchaImg = res.data.img;
+    });
+  },
   methods: {
+    updateCaptcha() {
+      clearTimeout(this.timer);
+      this.timer = setTimeout(() => {
+        getCaptcha().then(res => {
+          this.loginForm.captchaImg = res.data.img;
+        });
+      }, 400);
+    },
     ...mapMutations(["SET_USERINFO"]),
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          const loading = this.$loading({
-            lock: true,
-            text: "Loading",
-            spinner: "el-icon-loading",
-            background: "rgba(0, 0, 0, 0.7)"
+          verifyCaptcha(this.loginForm.captcha).then(res => {
+            if (!res.data.state) {
+              const loading = this.$loading({
+                lock: true,
+                text: "Loading",
+                spinner: "el-icon-loading",
+                background: "rgba(0, 0, 0, 0.7)"
+              });
+              // 本地校验通过
+              let { username, password } = this.loginForm;
+              login(username, password)
+                .then(res => {
+                  loading.close();
+                  // console.log(res);
+                  if (res.data.state) {
+                    this.$message.success("登陆成功,跳转中......");
+                    localStorage.setItem("token", res.data.token);
+                    localStorage.setItem(
+                      "userInfo",
+                      JSON.stringify(res.data.userInfo)
+                    );
+                    this.SET_USERINFO(res.data.userInfo);
+                    this.$router.push("/Welcome");
+                  } else {
+                    this.$message.error("用户名或密码错误");
+                    this.loginForm.password = "";
+                  }
+                })
+                .catch(err => {
+                  console.log(err);
+                });
+            } else {
+              this.$message.error("验证码错误");
+            }
           });
-          // 本地校验通过
-          let { username, password } = this.loginForm;
-          login(username, password)
-            .then(res => {
-              loading.close();
-              // console.log(res);
-              if (res.data.state) {
-                this.$message.success("登陆成功,跳转中......");
-                localStorage.setItem("token", res.data.token);
-                localStorage.setItem("userInfo", JSON.stringify(res.data.userInfo));
-                this.SET_USERINFO(res.data.userInfo)
-                this.$router.push("/Welcome");
-              } else {
-                this.$message.error("用户名或密码错误");
-                this.loginForm.password = ''
-              }
-            })
-            .catch(err => {
-              console.log(err);
-            });
         } else {
           console.log("error submit!!");
           return false;
@@ -154,5 +203,18 @@ h1 {
 .el-button {
   width: 80%;
   background: linear-gradient(90deg, #1596fb, #002dff);
+}
+.captcha {
+  width: 100px;
+  height: 40.8px;
+  display: inline-block;
+  background: #fff;
+  vertical-align: middle;
+  overflow: hidden;
+}
+.captchaInput {
+  width: 120px;
+  vertical-align: middle;
+  margin-right: 20px;
 }
 </style>

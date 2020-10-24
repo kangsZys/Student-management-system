@@ -1,17 +1,25 @@
-.login .el-form-item__label{
+.login .el-form-item__label {
     color: #fff;
 }
-.login .el-input{
+
+.login .el-input {
     width: 80%;
 }
-.login .el-input__inner{
+
+.login .el-input__inner {
     background: transparent;
     color: #fff;
 }
 
-.home .el-radio-group{
+.home .el-radio-group {}
 
-}
-.home .el-aside{
+.home .el-aside {
     width: auto !important;
+}
+
+.captcha svg {
+    width: 100px;
+    height: 40.8px;
+    filter: drop-shadow(rgb(6, 159, 170) 100px 0);
+    transform: translateX(-100px);
 }
