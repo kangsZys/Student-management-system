@@ -1,7 +1,8 @@
 <template>
 	<!-- dialog窗口 用于添加和编辑的弹窗-->
-	<el-dialog :title="dialogInfo.title" :visible.sync="dialogVisible">
-		<el-form :model="stuForm" :rules="stuRules" ref="addStuRuleForm">
+	<el-dialog :title="dialogInfo.title" :visible.sync="dialogVisible" align="center">
+		<el-form :model="stuForm" :rules="stuRules" ref="addStuRuleForm" v-loading="loading" element-loading-text="拼命加载中(╥╯^╰╥)"
+		 element-loading-spinner="el-icon-loading">
 			<el-form-item label="头像">
 				<el-upload class="uploadAvatar" ref="uploadAvatar" action="http://chst.vip/students/uploadStuAvatar" list-type="picture-card"
 				 :on-success="uploadSuccess" :on-remove="removeAvatar" :limit="1" name="headimgurl" :multiple="false">
@@ -41,8 +42,15 @@
 </template>
 <script>
 	// import api from '@/api'
-	// const api = require('@/api')
-	import {addstu} from "@/api/index.js"
+	const api = require('@/api/index.js')
+	// !!! 此处引入必须用const ... require引入，否则无法直接通过api.去调用方法，api为undefined
+	// console.log(api)
+
+	// import {
+	// 	addstu,
+	// 	updateStu,
+	// 	getstulist
+	// } from "@/api/index.js"
 	export default {
 		data() {
 			return {
@@ -52,6 +60,7 @@
 					editSuccessMsg: "增加成功",
 					editerrorMsg: "增加失败"
 				},
+				loading: false,
 				showAvatar: true,
 				dialogVisible: false,
 				stuRules: {
@@ -105,30 +114,49 @@
 		},
 		mounted() {
 			this.$bus.$on('showdialog', () => {
+				Object.keys(this.stuForm).forEach(item => {
+					this.stuForm[item] = ""
+				})
+				// this.$refs.uploadAvatar.$children[1].$el.children[0].style.display = "inline-block"
+				// this.$refs.uploadAvatar.$children[1].$el.style.background = ``
+				// 修改标题
+				this.dialogInfo.title = '添加学员信息'
+				// 修改请求函数
+				this.dialogInfo.requestName = 'addstu'
+				this.dialogInfo.editSuccessMsg = '内容添加成功'
+				this.dialogInfo.editerrorMsg = '内容增加失败，缺少字段'
+				// 打开dialog框
 				this.dialogVisible = true
 			})
-
-			// //增加学员信息通过bus发送过来的事件
-			// this.$bus.$on('showDialog', () => {
-			//   this.dialogInfo.title = "增加学员信息"
-			//   this.dialogInfo.requestName = "addStuDetail"
-			//   this.dialogInfo.editSuccessMsg = "增加成功"
-			//   this.dialogInfo.editerrorMsg = "增加失败,缺少字段"
-			//   this.dialogVisible = true
-			// })
-			// //编辑学员信息发送过来的事件
-			// this.$bus.$on('editStuEvent', (row) => {
-			//   //1.弹出dialog
-			//   this.dialogVisible = true
-			//   //2.数据回显
-			//   this.stuForm = { ...row }
-			//   // 更改dialog的标题
-			//   this.dialogInfo.title = "编辑学员信息"
-			//   this.dialogInfo.requestName = "updateStu"
-			//   this.dialogInfo.editSuccessMsg = "修改成功"
-			//   this.dialogInfo.editerrorMsg = "修改失败"
-			//   //3.更改提交
-			// })
+			this.$bus.$on('editEvent', (sId) => {
+				// console.log(this.stuForm.headimgurl)
+				this.dialogVisible = true
+				this.loading = true
+				this.dialogInfo.title = '编辑学员信息'
+				this.dialogInfo.requestName = 'updateStu'
+				this.dialogInfo.editSuccessMsg = '内容修改成功'
+				this.dialogInfo.editerrorMsg = '未检测到需要修改的内容'
+				// 信息回显
+				api.getstulist().then(res => {
+					this.loading = false
+					console.log(res.data.data)
+					let userInfo = res.data.data.filter(item => {
+						return item.sId === sId
+					})
+					this.stuForm = userInfo[0]
+				})
+				// .then(() => {
+				// 	if (this.stuForm.headimgurl) {
+				// 		console.log(this.$refs.uploadAvatar)
+				// 		this.$refs.uploadAvatar.$children[1].$el.children[0].style.display = "none"
+				// 		this.$refs.uploadAvatar.$children[1].$el.style.background = `url(${this.stuForm.headimgurl}) 0/cover`
+				// 	} else {
+				// 		// console.log(this.$refs.uploadAvatar)
+				// 		this.$refs.uploadAvatar.$children[1].$el.children[0].style.display = "inline-block"
+				// 		this.$refs.uploadAvatar.$children[1].$el.style.background = ``
+				// 	}
+				// })
+			})
 		},
 		methods: {
 			uploadSuccess(r) {
@@ -147,22 +175,50 @@
 						// 关闭 dialog
 						this.dialogVisible = false
 						//增加或者编辑
-						addstu(this.stuForm).then(res => {
-							console.log(res)
-							if(res.data && res.data.state){
-								this.$message.success('内容添加成功')
-								this.$bus.$emit('updateTable')
-								Object.keys(this.stuForm).forEach(item => {
-									this.stuForm[item] = ""
-								})
-								console.log(this.$refs)
-								this.$refs['uploadAvatar'].clearFiles()
-							}else{
-								this.$message.warning('添加失败，缺少字段')
-							}
-						}).catch(err => {
-							this.$message.error('网络错误')
-						})
+
+						// 测试用添加
+						// for (let i = 0; i < 10; i++) {
+						// 	this.stuForm = {
+						// 		name: `测试专用${i}`,
+						// 		productUrl: `测试专用${i}`,
+						// 		headimgurl: `http://49.235.165.18/avatar/headimgurl-1603525695466.jpg`,
+						// 		class: `测试专用`,
+						// 		age: `测试专用${i}`,
+						// 		city: `测试专用${i}`,
+						// 		degree: `测试专用${i}`,
+						// 		description: `测试专用${i}`
+						// 	}
+						// 	api[this.dialogInfo.requestName](this.stuForm)
+						// 		.then(res => {
+						// 			if (res.data && res.data.state) {
+						// 				console.log(this.$refs)
+						// 			} else {
+						// 				this.$message.warning(this.dialogInfo.editerrorMsg)
+						// 			}
+						// 		}).catch(err => {
+						// 			this.$message.error('网络错误')
+						// 		})
+						// }
+
+						// 正式用添加
+						api[this.dialogInfo.requestName](this.stuForm)
+							.then(res => {
+								console.log(res)
+								if (res.data && res.data.state) {
+									this.$message.success(this.dialogInfo.editSuccessMsg)
+									this.$bus.$emit('updateTable')
+									Object.keys(this.stuForm).forEach(item => {
+										this.stuForm[item] = ""
+									})
+									console.log(this.$refs)
+									this.$refs['uploadAvatar'].clearFiles()
+								} else {
+									this.$message.warning(this.dialogInfo.editerrorMsg)
+								}
+							}).catch(err => {
+								this.$message.error('网络错误')
+							})
+
 					} else {
 						this.$message.error('请将内容填写完整')
 					}

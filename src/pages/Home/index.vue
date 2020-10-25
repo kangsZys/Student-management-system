@@ -23,20 +23,18 @@
 						</el-col>
 						<el-col :span="6">
 							<div class="grid-content bg-purple">
-								<template>
-									<el-row class="demo-avatar demo-basic">
-										<el-col :span="12">
-											<div class="demo-basic--circle">
-												<div class="block">
-													<el-avatar :size="35" fit="fit" src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"></el-avatar>
-													<span>欢迎您：</span>
-													<span class="nickname">{{ userInfo.nickname }}</span>
-													<span class="exit" @click="exit">退出</span>
-												</div>
+								<el-row class="demo-avatar demo-basic">
+									<el-col :span="12">
+										<div class="demo-basic--circle">
+											<div class="block">
+												<el-avatar :size="35" fit="fit" src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"></el-avatar>
+												<span>欢迎您：</span>
+												<span class="nickname" @click="$router.push({path:'/Mine'})">{{ userInfo.nickname }}</span>
+												<span class="exit" @click="exit">退出</span>
 											</div>
-										</el-col>
-									</el-row>
-								</template>
+										</div>
+									</el-col>
+								</el-row>
 							</div>
 						</el-col>
 					</el-row>
@@ -68,6 +66,7 @@
 			...mapState(["userInfo", "menuList", "crumbs"])
 		},
 		mounted() {
+			// console.log(userInfo)
 			// console.log(this.$route.path);
 			// getLoginLog().then(res => {
 			// 	console.log(res);

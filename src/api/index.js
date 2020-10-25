@@ -33,9 +33,10 @@ export const verifyCaptcha = (captcha) => axios({
 })
 
 // 获取用户信息
-export const getstulist = () => axios({
+export const getstulist = (params = {}) => axios({
 	url: '/students/getstulist',
-	method: 'get'
+	method: 'get',
+	params
 })
 
 // 增加学员信息
@@ -47,3 +48,20 @@ export const addstu = (stuDetail) => axios({
 
 // 删除学员信息
 export const delStu = (sId) => axios.get(`/students/delstu?sId=${sId}`)
+
+// 修改学员信息
+export const updateStu = (updateStuInfo) => axios({
+	url: '/students/updatestu',
+	method: 'post',
+	data: updateStuInfo
+})
+
+// 搜索学员
+export const seachStu = (params) => {
+	return axios({
+		url: '/students/searchstu',
+		params
+	})
+}
+// 获取班级列表
+export const getClasses = () => axios.get(`/students/getclasses`)

@@ -9,30 +9,17 @@ import allRoutes from "../router/allRoutes";
 import router from "../router/index";
 
 Vue.use(Vuex);
-
 let userInfo = localStorage.getItem('userInfo') || '{}'
 userInfo = JSON.parse(userInfo)
-
 export default new Vuex.Store({
 	state: {
 		userInfo,
 		menuList: [],
 		crumbs: [],
-		dialogVisible: false,
-		stuForm: {
-			name: '',
-			productUrl: '',
-			headimgurl: '',
-			class: '',
-			age: '',
-			city: '',
-			degree: '',
-			description: ''
-		}
+		dialogVisible: false
 	},
 	mutations: {
 		SET_USERINFO(state, payload) {
-			return 1
 			state.userInfo = payload
 		},
 		SETMENULIST(state, payload) {
@@ -45,14 +32,6 @@ export default new Vuex.Store({
 		//设置面包屑
 		SET_CRUMBS(state, payload) {
 			state.crumbs = payload
-		},
-		// 打开dialog
-		CHANGEDIALOG(state, payload){
-			state.dialogVisible = !state.dialogVisible
-		},
-		// 更改stuForm数据源
-		SET_STUFORM(state,payload){
-			state.stuForm = payload
 		}
 	},
 	actions: {
